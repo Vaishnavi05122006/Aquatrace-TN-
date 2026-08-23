@@ -19,7 +19,7 @@ const FILTERS = [
 ];
 
 export default function DashboardPage() {
-  const { user, role, logout } = useAuth();
+  const { user, role, displayName, logout } = useAuth();
   const [reports, setReports] = useState([]);
   const [loadError, setLoadError] = useState(null);
   const [filterKey, setFilterKey] = useState('active');
@@ -69,7 +69,7 @@ export default function DashboardPage() {
             </span>
           )}
           <span style={styles.roleTag}>{role}</span>
-          <span style={styles.email}>{user?.email}</span>
+          <span style={styles.email}>{displayName}</span>
           <button style={styles.logoutBtn} onClick={logout}>Sign out</button>
         </div>
       </header>
