@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import StatusDot from './StatusDot';
 
@@ -35,6 +34,7 @@ export default function ReportCard({
   const [showResolveForm, setShowResolveForm] = useState(false);
 
   const canAct = role === 'diver' || role === 'admin';
+  const isUrgent = report.priority === 'urgent';
 
   return (
     <div
@@ -42,12 +42,14 @@ export default function ReportCard({
       style={{
         ...styles.card,
         borderColor: selected ? 'var(--color-amber)' : 'var(--color-border)',
+        borderLeft: isUrgent ? '3px solid var(--color-red)' : styles.card.border,
       }}
     >
       <div style={styles.headerRow}>
         <div style={styles.statusRow}>
           <StatusDot status={report.status} />
           <span style={styles.statusLabel}>{STATUS_LABEL[report.status] || report.status}</span>
+          {isUrgent && <span style={styles.urgentBadge}>URGENT</span>}
         </div>
         <span style={styles.timestamp}>{formatTimestamp(report.capturedAt)}</span>
       </div>
@@ -174,6 +176,15 @@ const styles = {
     textTransform: 'uppercase',
     letterSpacing: '0.03em',
     color: 'var(--color-text-dim)',
+  },
+  urgentBadge: {
+    fontSize: 10,
+    fontWeight: 700,
+    letterSpacing: '0.04em',
+    color: 'var(--color-red)',
+    border: '1px solid var(--color-red)',
+    borderRadius: 'var(--radius-sm)',
+    padding: '1px 6px',
   },
   timestamp: {
     fontFamily: 'var(--font-mono)',
