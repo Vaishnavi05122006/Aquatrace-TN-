@@ -34,16 +34,26 @@ export default function DashboardPage() {
   }, []);
 
   const activeFilter = FILTERS.find((f) => f.key === filterKey) ?? FILTERS[0];
-  const filteredReports = useMemo(
-    () => reports.filter(activeFilter.match),
-    [reports, activeFilter],
-  );
+  const filteredReports = useMemo(() => {
+    const matched = reports.filter(activeFilter.match);
+    return [...matched].sort((a, b) => {
+      const aUrgent = a.priority === 'urgent' && a.status !== 'resolved';
+      const bUrgent = b.priority === 'urgent' && b.status !== 'resolved';
+      if (aUrgent === bUrgent) return 0;
+      return aUrgent ? -1 : 1;
+    });
+  }, [reports, activeFilter]);
 
   const counts = useMemo(() => {
     const c = {};
     for (const f of FILTERS) c[f.key] = reports.filter(f.match).length;
     return c;
   }, [reports]);
+
+  const urgentCount = useMemo(
+    () => reports.filter((r) => r.priority === 'urgent' && r.status !== 'resolved').length,
+    [reports],
+  );
 
   return (
     <div style={styles.page}>
@@ -53,6 +63,11 @@ export default function DashboardPage() {
           <span style={styles.brandText}>AquaTrace</span>
         </div>
         <div style={styles.headerRight}>
+          {urgentCount > 0 && (
+            <span style={styles.urgentHeaderBadge}>
+              ⚠ {urgentCount} URGENT
+            </span>
+          )}
           <span style={styles.roleTag}>{role}</span>
           <span style={styles.email}>{user?.email}</span>
           <button style={styles.logoutBtn} onClick={logout}>Sign out</button>
@@ -159,6 +174,16 @@ const styles = {
     border: '1px solid var(--color-amber)',
     borderRadius: 'var(--radius-sm)',
     padding: '2px 8px',
+  },
+  urgentHeaderBadge: {
+    fontSize: 11,
+    fontWeight: 700,
+    letterSpacing: '0.03em',
+    color: 'var(--color-red)',
+    border: '1px solid var(--color-red)',
+    borderRadius: 'var(--radius-sm)',
+    padding: '2px 8px',
+    background: 'rgba(214, 95, 95, 0.1)',
   },
   email: {
     fontSize: 13,
