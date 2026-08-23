@@ -8,6 +8,7 @@ const AuthContext = createContext(null);
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [role, setRole] = useState(null);
+  const [displayName, setDisplayName] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -15,9 +16,12 @@ export function AuthProvider({ children }) {
       setUser(firebaseUser);
       if (firebaseUser) {
         const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid));
-        setRole(userDoc.exists() ? userDoc.data().role : null);
+        const data = userDoc.exists() ? userDoc.data() : null;
+        setRole(data?.role ?? null);
+        setDisplayName(data?.displayName || firebaseUser.email);
       } else {
         setRole(null);
+        setDisplayName(null);
       }
       setLoading(false);
     });
@@ -28,7 +32,7 @@ export function AuthProvider({ children }) {
   const logout = () => signOut(auth);
 
   return (
-    <AuthContext.Provider value={{ user, role, loading, login, logout }}>
+    <AuthContext.Provider value={{ user, role, displayName, loading, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
@@ -38,4 +42,4 @@ export function useAuth() {
   const ctx = useContext(AuthContext);
   if (!ctx) throw new Error('useAuth must be used within AuthProvider');
   return ctx;
-                }
+}
