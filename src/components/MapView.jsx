@@ -8,17 +8,25 @@ const STATUS_COLOR = {
   resolved: '#5FB49C',
 };
 
-function markerIcon(status) {
+function markerIcon(status, priority) {
   const color = STATUS_COLOR[status] || '#8FA6AD';
+  const isUrgent = priority === 'urgent' && status !== 'resolved';
+  const ring = isUrgent
+    ? '<circle cx="13" cy="13" r="11" fill="none" stroke="#D65F5F" stroke-width="2.5"/>'
+    : '';
+
   return L.divIcon({
     className: '',
-    html: `<svg width="26" height="34" viewBox="0 0 26 34" xmlns="http://www.w3.org/2000/svg">
-      <path d="M13 0C5.8 0 0 5.8 0 13c0 9.5 13 21 13 21s13-11.5 13-21C26 5.8 20.2 0 13 0z" fill="${color}"/>
-      <circle cx="13" cy="13" r="5" fill="#0B1D26"/>
+    html: `<svg width="30" height="38" viewBox="0 0 30 38" xmlns="http://www.w3.org/2000/svg">
+      <g transform="translate(2, 0)">
+        <path d="M13 0C5.8 0 0 5.8 0 13c0 9.5 13 21 13 21s13-11.5 13-21C26 5.8 20.2 0 13 0z" fill="${color}"/>
+        ${ring}
+        <circle cx="13" cy="13" r="5" fill="#0B1D26"/>
+      </g>
     </svg>`,
-    iconSize: [26, 34],
-    iconAnchor: [13, 34],
-    popupAnchor: [0, -30],
+    iconSize: [30, 38],
+    iconAnchor: [15, 38],
+    popupAnchor: [0, -34],
   });
 }
 
@@ -53,12 +61,15 @@ export default function MapView({ reports, selectedId, onSelect }) {
         <Marker
           key={report.id}
           position={[report.latitude, report.longitude]}
-          icon={markerIcon(report.status)}
+          icon={markerIcon(report.status, report.priority)}
           eventHandlers={{ click: () => onSelect(report.id) }}
         >
           <Popup>
             <div style={{ fontFamily: 'var(--font-mono)', fontSize: 12 }}>
               <strong>{report.status}</strong>
+              {report.priority === 'urgent' && (
+                <span style={{ color: '#D65F5F', fontWeight: 700 }}> · URGENT</span>
+              )}
               <br />
               {report.latitude.toFixed(5)}, {report.longitude.toFixed(5)}
               <br />
