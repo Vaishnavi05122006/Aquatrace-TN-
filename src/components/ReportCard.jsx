@@ -7,6 +7,15 @@ const STATUS_LABEL = {
   resolved: 'Resolved',
 };
 
+const NET_TYPE_LABEL = {
+  bottom_trawl: 'Bottom trawl net',
+  gillnet: 'Gillnet',
+  mixed: 'Mix of trawl and gillnet',
+  traps: 'Weirs / Traps / Baskets',
+  line_hooks: 'Line and hooks',
+  unknown: 'Unknown gear',
+};
+
 function formatTimestamp(value) {
   if (!value) return '—';
   const date = typeof value === 'string' ? new Date(value) : value.toDate?.() ?? null;
@@ -59,6 +68,10 @@ export default function ReportCard({
       </div>
 
       <div style={styles.reporter}>{report.reporterEmail}</div>
+
+      {report.netType && report.netType !== 'unknown' && (
+        <div style={styles.netType}>🥅 {NET_TYPE_LABEL[report.netType] || report.netType}</div>
+      )}
 
       {report.photoBase64 && (
         <button
@@ -197,6 +210,11 @@ const styles = {
     marginBottom: 'var(--space-1)',
   },
   reporter: {
+    fontSize: 12,
+    color: 'var(--color-text-dim)',
+    marginBottom: 'var(--space-2)',
+  },
+  netType: {
     fontSize: 12,
     color: 'var(--color-text-dim)',
     marginBottom: 'var(--space-2)',
