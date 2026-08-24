@@ -9,6 +9,7 @@ import {
 } from '../services/reportsService';
 import MapView from '../components/MapView';
 import ReportCard from '../components/ReportCard';
+import AppHeader from '../components/AppHeader';
 
 const FILTERS = [
   { key: 'active', label: 'Active', match: (r) => r.status !== 'resolved' },
@@ -19,7 +20,7 @@ const FILTERS = [
 ];
 
 export default function DashboardPage() {
-  const { user, role, displayName, logout } = useAuth();
+  const { user, role } = useAuth();
   const [reports, setReports] = useState([]);
   const [loadError, setLoadError] = useState(null);
   const [filterKey, setFilterKey] = useState('active');
@@ -57,22 +58,7 @@ export default function DashboardPage() {
 
   return (
     <div style={styles.page}>
-      <header style={styles.header}>
-        <div style={styles.brand}>
-          <span style={styles.brandMark}>▲</span>
-          <span style={styles.brandText}>AquaTrace</span>
-        </div>
-        <div style={styles.headerRight}>
-          {urgentCount > 0 && (
-            <span style={styles.urgentHeaderBadge}>
-              ⚠ {urgentCount} URGENT
-            </span>
-          )}
-          <span style={styles.roleTag}>{role}</span>
-          <span style={styles.email}>{displayName}</span>
-          <button style={styles.logoutBtn} onClick={logout}>Sign out</button>
-        </div>
-      </header>
+      <AppHeader urgentCount={urgentCount} />
 
       <div style={styles.filterBar}>
         {FILTERS.map((f) => (
@@ -137,66 +123,6 @@ const styles = {
     height: '100vh',
     display: 'flex',
     flexDirection: 'column',
-  },
-  header: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: 'var(--space-3) var(--space-5)',
-    borderBottom: '1px solid var(--color-border)',
-    background: 'var(--color-panel)',
-  },
-  brand: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: 'var(--space-2)',
-  },
-  brandMark: {
-    color: 'var(--color-amber)',
-    fontSize: 18,
-  },
-  brandText: {
-    fontWeight: 700,
-    fontSize: 16,
-    letterSpacing: '-0.01em',
-  },
-  headerRight: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: 'var(--space-3)',
-  },
-  roleTag: {
-    fontSize: 11,
-    fontWeight: 700,
-    textTransform: 'uppercase',
-    letterSpacing: '0.04em',
-    color: 'var(--color-amber)',
-    border: '1px solid var(--color-amber)',
-    borderRadius: 'var(--radius-sm)',
-    padding: '2px 8px',
-  },
-  urgentHeaderBadge: {
-    fontSize: 11,
-    fontWeight: 700,
-    letterSpacing: '0.03em',
-    color: 'var(--color-red)',
-    border: '1px solid var(--color-red)',
-    borderRadius: 'var(--radius-sm)',
-    padding: '2px 8px',
-    background: 'rgba(214, 95, 95, 0.1)',
-  },
-  email: {
-    fontSize: 13,
-    color: 'var(--color-text-dim)',
-    fontFamily: 'var(--font-mono)',
-  },
-  logoutBtn: {
-    background: 'none',
-    border: '1px solid var(--color-border)',
-    color: 'var(--color-text-dim)',
-    borderRadius: 'var(--radius-sm)',
-    padding: '6px 12px',
-    fontSize: 12,
   },
   filterBar: {
     display: 'flex',
